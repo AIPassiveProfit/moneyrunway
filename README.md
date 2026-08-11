@@ -39,6 +39,39 @@ investment, tax, legal, or credit advice.
 | Login | None in Phase 0-1, then Better Auth | Do not make people sign up before they see value |
 | Testing | Playwright + Pytest | See docs/TESTING.md |
 
-## Status
+## Status: Phase 0 is built
 
-Phase 0 not started. This repository currently contains planning documents only.
+One screen, real math, sample data you can edit. No database and no login yet —
+refreshing the page resets it, which is exactly what Phase 0 is supposed to do.
+
+**Run it on your machine:**
+
+```bash
+npm install
+npm run dev          # then open http://localhost:3000
+```
+
+**Check that it works:**
+
+```bash
+npm test             # 21 unit tests on the calculation engine
+npm run test:e2e     # 15 browser tests on a phone-sized screen
+```
+
+### What Phase 0 contains
+
+| Piece | Where |
+| --- | --- |
+| The Safe to Spend engine (pure, tested) | `src/lib/calc/` |
+| The Next Best Action rules | `src/lib/calc/nextAction.ts` |
+| The sample household (Jasmine from the ICP) | `src/lib/demo.ts` |
+| The dashboard, five cards | `src/app/page.tsx`, `src/components/` |
+| Tap-to-edit sheets and the explainer | `src/components/EditSheet.tsx`, `BreakdownSheet.tsx` |
+| Browser tests, levels 1 and 2 | `tests/e2e/` |
+| Pytest smoke tests for the deployed site | `tests/smoke/` |
+| Railway deploy config | `railway.json` |
+
+### What Phase 0 deliberately does not contain
+
+No database, no accounts, no bills calendar, no adding new bills, no sinking fund
+or debt screens. Those are Phases 1 through 4 — see [docs/ROADMAP.md](docs/ROADMAP.md).

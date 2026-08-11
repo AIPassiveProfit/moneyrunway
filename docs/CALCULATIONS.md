@@ -62,11 +62,21 @@ type CalcResult = {
 
 ### Step 1 — Find the window
 
+Income carries one of three statuses, and the difference matters more than it looks:
+
+| Status | Meaning | Counts toward the runway? |
+| --- | --- | --- |
+| `received` | Already landed and already in the balance | No — counting it would double it |
+| `scheduled` | A reliable paycheck from a job | Yes, always |
+| `expected` | An invoice or payout that may slip | **Only if the user opts in** |
+
 ```
-nextIncomeDate = earliest income event after today
-                 where status = 'received' OR (status = 'expected' AND countExpected = true)
-daysInWindow   = daysBetween(today, nextIncomeDate)   // inclusive of today, exclusive of payday
+nextIncomeDate = earliest income event STRICTLY AFTER today that counts
+daysInWindow   = max(1, daysBetween(today, nextIncomeDate))
 ```
+
+Strictly after, for two reasons: money landing today is assumed to be in the balance already,
+and a zero-day window would divide by zero.
 
 If no future income exists, the window is `horizonDays` (default 30) and we show
 "Add your next payday for a more accurate number."
@@ -172,15 +182,17 @@ with the shortfall action card, not as `$0`.
 ### Step 9 — Status color
 
 ```
-essentialsInWindow = essentialsNeededCents
-buffer             = safeToSpendPeriodCents
+obligations = requiredBillsCents + essentialsNeededCents
+buffer      = safeToSpendPeriodCents
 
 red    if buffer < 0
-amber  if buffer >= 0 AND buffer < 0.10 * (requiredBillsCents + essentialsInWindow)
+amber  if buffer >= 0 AND buffer < 0.15 * obligations
 green  otherwise
 ```
 
-Amber is honest, not alarmist: "Tight but manageable."
+Amber is honest, not alarmist: "Tight but manageable." The 15% line is the point where one
+ordinary surprise — a co-pay, a school fee — breaks the plan. When obligations are zero the
+threshold is zero, so an empty account reads green rather than dividing by nothing.
 
 ---
 
@@ -200,8 +212,13 @@ for each day D in [today .. today + horizonDays]:
     if balance < 0 and shortfall is null:
         shortfall = { date: D, amountCents: -balance }
 
-runwayEndDate = the last date before the balance first goes negative
+runwayEndDate = the last non-negative date BEFORE the first shortfall
 ```
+
+That "before the first shortfall" is load-bearing. Later paychecks push the balance positive
+again, so tracking the last non-negative day across the whole horizon would answer "your money
+lasts until November" when it actually runs out three weeks from now. Once the first shortfall
+is found, both values are frozen.
 
 Display strings:
 - No shortfall in horizon → **"Your money should last past your next payday."**
@@ -311,14 +328,14 @@ mechanism. She has been burned by apps that produced a number she could not expl
 | # | Scenario | Expected |
 | --- | --- | --- |
 | 1 | $1,000 cash, no bills, payday in 10 days, no envelopes | $100/day, green |
-| 2 | $1,000 cash, $900 rent due in 3 days, payday in 10 days | $10/day, amber |
+| 2 | $1,000 cash, $900 bill due in 3 days, payday in 10 days | $10/day, amber |
 | 3 | $500 cash, $900 rent due in 3 days | negative, red, shortfall on the rent date |
-| 4 | $1,000 cash, $600 Christmas fund due in 120 days | ~$4.10/day reserved, not $600 |
+| 4 | $1,000 cash, $600 Christmas fund due in 120 days | $5/day reserved, not $600 |
 | 5 | Expected (unreceived) income in the window | excluded by default; included when toggle on |
 | 6 | Payday is today | window = today → next payday, not zero days |
 | 7 | No future income at all | falls back to a 30-day window with a prompt |
 | 8 | Envelope already overspent (`spent > limit`) | `remaining` clamps to 0, never adds money back |
-| 9 | Debt minimum that does not cover interest | payoff = NEVER, no crash, no `Infinity` in the UI |
+| 9 | Debt minimum that does not cover interest | payoff = NEVER, no crash, no `Infinity` in the UI *(deferred to Phase 3 with the payoff tracker)* |
 | 10 | Leap day / DST boundary / month-end (Jan 31 monthly bill) | day counts correct in the user's timezone |
 | 11 | Every input zero | all outputs zero, status green, no divide-by-zero |
 | 12 | Sinking fund target date already passed, underfunded | full remainder reserved + action card raised |

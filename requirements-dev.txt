@@ -1,0 +1,6 @@
+# Level 1 smoke tests, run against a deployed Money Runway.
+#   pip install -r requirements-dev.txt
+#   playwright install chromium
+#   BASE_URL=https://your-app.up.railway.app pytest tests/smoke -v
+pytest==8.4.2
+pytest-playwright==0.7.1

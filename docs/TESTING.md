@@ -35,9 +35,22 @@ Railway URL**. It does not care that the app is TypeScript — it just opens a b
 the real, live site. That is our "is production actually up and correct" layer.
 
 ```bash
-pip install pytest pytest-playwright && playwright install chromium
+pip install -r requirements-dev.txt
+playwright install chromium
 BASE_URL=https://moneyrunway.up.railway.app pytest tests/smoke -v
 ```
+
+If the machine already has a Chromium (most CI images do), point at it instead of
+downloading a second copy — both test runners honour the same variable:
+
+```bash
+PLAYWRIGHT_CHROMIUM_PATH=/opt/pw-browsers/chromium npm run test:e2e
+PLAYWRIGHT_CHROMIUM_PATH=/opt/pw-browsers/chromium pytest tests/smoke -v
+```
+
+One gotcha worth knowing: **restart `next start` after every `next build`.** A
+running server keeps the old build manifest in memory and returns 500s for
+JavaScript files the new build renamed — which looks exactly like a broken app.
 
 ---
 
@@ -74,14 +87,18 @@ Checklist:
 
 Real browser, fake data. Fast and deterministic — no database, no network.
 
-Phase 0 coverage:
-- [ ] Demo data loads and Safe to Spend equals the value the engine predicts
-- [ ] Tapping the rent amount opens the edit sheet
-- [ ] Changing rent from $1,450 → $1,200 raises Safe to Spend by exactly $250 over the period
-- [ ] Setting a balance low enough turns the card red and shows the shortfall message
-- [ ] "How is this calculated?" lists every subtraction and the lines sum to the total
-- [ ] Every interactive target is at least 44×44 px
-- [ ] Keyboard-only user can reach and operate every control
+Phase 0 coverage (all passing, in `tests/e2e/dashboard.spec.ts`):
+- [x] Raising the balance raises Safe to Spend
+- [x] A balance that cannot cover the bills turns the card red and names the shortfall
+- [x] A healthy balance shows the on-track state
+- [x] Reducing the car payment by $200 raises the period figure by exactly $200
+- [x] "How is this calculated?" lists every subtraction and the lines sum to the total
+- [x] A breakdown line opens the thing it refers to
+- [x] Escape closes a sheet without saving
+- [x] The Next Best Action button opens something useful
+- [x] Overspending an envelope shows the over-budget state
+- [x] Every interactive target is at least 44 px tall
+- [x] The whole flow works with a keyboard alone
 
 Alongside these, **Vitest unit tests** cover the calc engine — all 12 cases in
 [CALCULATIONS.md §8](CALCULATIONS.md#8-test-cases-the-engine-must-pass-write-these-first).

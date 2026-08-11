@@ -14,7 +14,12 @@ Each phase is a working, deployed app. We never have a half-built thing sitting 
 
 ---
 
-## Phase 0 — The Food Stand (today)
+## Phase 0 — The Food Stand ✅ BUILT
+
+Status: built and tested locally. 21 unit tests and 15 browser tests pass.
+Not yet deployed to Railway — that step waits for you to say go.
+
+
 
 **One item on the menu, cooked perfectly, sold on the sidewalk.**
 
