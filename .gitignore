@@ -50,3 +50,6 @@ next-env.d.ts
 __pycache__/
 .pytest_cache/
 *.pyc
+
+# generated preview build
+/preview/money-runway-preview.html
