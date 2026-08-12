@@ -174,12 +174,39 @@ Docs: [R2 presigned URLs](https://developers.cloudflare.com/r2/api/s3/presigned-
 No finance-specific MCP is needed for the MVP, because there are no bank connections in the MVP.
 
 ### Bank sync, when we eventually want it (Phase 5)
-- **SimpleFIN Bridge** — ~$1.50/user/month, far simpler and cheaper than Plaid, and it is what
-  Actual Budget's community leans on. Evaluate first.
-- **Plaid** — the industry default, but pricing and compliance overhead are real. Only if SimpleFIN's
-  institution coverage is inadequate.
-- **Decision:** do not commit to either until real users ask. Manual entry is a genuine selling
-  point for a privacy-conscious, distrustful audience ("no bank login, ever").
+
+Prices verified 2026-08-12.
+
+| Option | Cost | Notes |
+| --- | --- | --- |
+| [SimpleFIN Bridge](https://actualbudget.org/docs/advanced/bank-sync/simplefin/) | **$15/year per user** (~$1.25/mo) | Read-only, daily refresh, no minimum, no contract. What Actual Budget's community uses. **Evaluate this first.** |
+| [Teller](https://teller.io/) | Free tier, 100 live connections | Genuinely free to start; rate limits are not publicly documented |
+| [Plaid](https://plaid.com/docs/account/billing/) | ~$1.50/user/mo with a **~$500/month minimum**; median contract ~$9,000/yr | Industry standard, priced for funded companies |
+
+**The Plaid minimum is the deciding number.** ~$500/month applies whether we have 3 users or 300.
+At a $10/month subscription that is 50 paying customers required just to break even on one line
+item, before any other cost. It is not a starting position for a bootstrapped product.
+
+**Costs that are not money:**
+- Holding bank credentials/tokens is a security and legal responsibility that lands on the owner.
+- Connections break constantly — banks change login flows, tokens go stale. "Why isn't my account
+  syncing?" becomes the top support request, and it is unfixable from our side.
+- Asking for bank credentials is trust-expensive at exactly the moment we have the least trust.
+
+**Decision: do not build bank sync until existing users ask for it by name.** Not "would you like
+sync?" — everyone says yes to a free feature. Wait for people already using the app to say manual
+entry is what is stopping them.
+
+**Why manual entry is arguably a feature for this ICP.** From the ICP research: *"I am scared to
+look at my bank account,"* *"they do not log in to accounts because it feels emotionally
+expensive,"* *"is this just another person trying to sell me a budget?"* This audience is avoidant
+and distrustful. **"No bank login. Ever."** is a headline that differentiates us from Mint, Rocket
+Money, Monarch and YNAB — and typing your own balance is itself the behaviour change we want.
+
+**What we do instead, already in the roadmap:** make manual entry nearly weightless. The only
+input that recurs is the checking balance — roughly 15 seconds, once or twice a week. Bills recur
+automatically (Phase 2), quick-add chips cover the 12 most common bills (Phase 1), a staleness
+nudge appears after 5 days (Phase 2), and the weekly check-in turns it into a habit (Phase 4).
 
 ### Testing tool: Playwright CRX
 [ruifigueira/playwright-crx](https://github.com/ruifigueira/playwright-crx) — the Playwright recorder
