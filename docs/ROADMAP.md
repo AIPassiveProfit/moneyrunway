@@ -16,8 +16,14 @@ Each phase is a working, deployed app. We never have a half-built thing sitting 
 
 ## Phase 0 — The Food Stand ✅ BUILT
 
-Status: built and tested locally. 21 unit tests and 15 browser tests pass.
-Not yet deployed to Railway — that step waits for you to say go.
+Status: **shipped**. Live at https://moneyrunway-production.up.railway.app
+21 unit tests, 15 browser tests, and 6 deployed-site smoke tests all pass.
+Railway rebuilds and redeploys automatically on every push to this branch.
+
+One thing bit us on the first deploy, worth remembering: the build server
+defaulted to Node 18 and Next.js needs 20 or newer. Fixed by pinning `22.x` in
+`package.json` and `.nvmrc`. "Works on my machine" is the most common deploy
+failure there is, and pinning versions is how you stop it.
 
 
 

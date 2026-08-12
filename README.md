@@ -39,7 +39,12 @@ investment, tax, legal, or credit advice.
 | Login | None in Phase 0-1, then Better Auth | Do not make people sign up before they see value |
 | Testing | Playwright + Pytest | See docs/TESTING.md |
 
-## Status: Phase 0 is built
+## Status: Phase 0 is live
+
+**https://moneyrunway-production.up.railway.app**
+
+Deployed on Railway, auto-deploying from this branch on every push.
+
 
 One screen, real math, sample data you can edit. No database and no login yet —
 refreshing the page resets it, which is exactly what Phase 0 is supposed to do.
